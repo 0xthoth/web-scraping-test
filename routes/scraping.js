@@ -91,7 +91,6 @@ async function scrapeHolder(networkId) {
           last
         );
         text = await (await prev?.getProperty("innerHTML"))?.jsonValue();
-        console.log(text);
       } else {
         // for Hamony network
         await new Promise((resolve) => setTimeout(resolve, 9500));
@@ -135,7 +134,7 @@ router.get("/:networkId", async function (req, res, next) {
 
   const data = await Promise.all([
     scrape(Number(networkId)),
-    scrapeHolder(Number(networkId)),
+    // scrapeHolder(Number(networkId)),
   ]);
 
   const values = data.reduce(
