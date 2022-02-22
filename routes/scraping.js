@@ -151,17 +151,7 @@ router.get("/:networkId", async function (req, res, next) {
       .send("Something broke! we support networks: 56, 1285 and 1666600000.");
   }
 
-  const data = await Promise.all([
-    scrape(Number(networkId)),
-    // scrapeHolder(Number(networkId)),
-  ]);
-  const values = data.reduce(
-    (prev, cur) => ({
-      ...prev,
-      ...cur,
-    }),
-    {}
-  );
+  const values = scrape(Number(networkId));
 
   const size = Object.keys(values).length;
 
