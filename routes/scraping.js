@@ -153,7 +153,7 @@ router.get("/:networkId", async function (req, res, next) {
 
   const data = await Promise.all([
     scrape(Number(networkId)),
-    scrapeHolder(Number(networkId)),
+    // scrapeHolder(Number(networkId)),
   ]);
   const values = data.reduce(
     (prev, cur) => ({
