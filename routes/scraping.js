@@ -48,6 +48,26 @@ async function scrape(networkId) {
   browser.close();
   console.log("the end");
 
+  console.log({
+    chainId: networkId,
+    globalMarketCap: text[0],
+    globalTotalTreasuryBalance: text[1],
+    globalTotalTreasuryVaultsBalance: text[2],
+    globalCirculatingSupply: text[3],
+    globalTotalSupply: text[4],
+    globalBackingPerTem: text[5],
+    globalRunway: text[6],
+    marketCap: text[7],
+    temPrice: text[8],
+    apy: text[9],
+    circulatingSupply: text[10],
+    totalSupply: text[11],
+    treasuryBalance: text[12],
+    stakingReturn: text[13],
+    stakedRate: text[14],
+    wSwordPrice: text[15],
+  });
+
   return {
     chainId: networkId,
     globalMarketCap: text[0],
@@ -110,6 +130,11 @@ async function scrapeHolder(networkId) {
   );
 
   console.log("holder end");
+
+  console.log({
+    holderSword: data[0],
+    holderWsword: data[1],
+  });
 
   return {
     holderSword: data[0],
