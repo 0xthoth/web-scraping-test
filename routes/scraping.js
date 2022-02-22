@@ -82,23 +82,27 @@ async function scrapeHolder(networkId) {
 
     let text = "";
 
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    const last = await page.$("#sparkholderscontainer");
-    if (last) {
-      const prev = await page.evaluateHandle(
-        (el) => el.previousElementSibling,
-        last
-      );
-      text = await (await prev.getProperty("innerHTML")).jsonValue();
-      console.log(text);
-    } else {
-      // for Hamony network
-      await new Promise((resolve) => setTimeout(resolve, 9000));
+    try {
+      if (networkId !== 1666600000) {
+        await new Promise((resolve) => setTimeout(resolve, 9000));
+        const last = await page.$("#sparkholderscontainer");
+        const prev = await page.evaluateHandle(
+          (el) => el.previousElementSibling,
+          last
+        );
+        text = await (await prev.getProperty("innerHTML")).jsonValue();
+        console.log(text);
+      } else {
+        // for Hamony network
+        await new Promise((resolve) => setTimeout(resolve, 9000));
 
-      const [span] = await page.$x("//span[contains(., 'Holders')]");
-      const prev = await page.evaluateHandle((el) => el?.nextSibling, span);
+        const [span] = await page.$x("//span[contains(., 'Holders')]");
+        const prev = await page.evaluateHandle((el) => el?.nextSibling, span);
 
-      text = await (await prev?.getProperty("textContent"))?.jsonValue();
+        text = await (await prev?.getProperty("textContent"))?.jsonValue();
+      }
+    } catch (e) {
+      console.log(e);
     }
 
     await page.close();
