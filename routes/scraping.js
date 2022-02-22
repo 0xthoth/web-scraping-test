@@ -90,6 +90,7 @@ async function scrapeHolder(networkId) {
         last
       );
       text = await (await prev.getProperty("innerHTML")).jsonValue();
+      console.log(text);
     } else {
       // for Hamony network
       await new Promise((resolve) => setTimeout(resolve, 9000));
@@ -124,6 +125,7 @@ router.get("/:networkId", async function (req, res, next) {
     res
       .status(500)
       .send("Something broke! we support networks: 56, 1285 and 1666600000.");
+    return;
   }
 
   const data = await Promise.all([
@@ -143,10 +145,12 @@ router.get("/:networkId", async function (req, res, next) {
 
   if (size < 16) {
     res.status(500).send("Something broke! incomplete information.");
+    return;
   }
 
   res.setHeader("Content-Type", "application/json");
   res.end(JSON.stringify(values));
+  return;
 });
 
 module.exports = router;
