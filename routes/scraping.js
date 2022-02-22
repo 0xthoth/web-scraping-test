@@ -72,7 +72,9 @@ async function scrape(networkId) {
 async function scrapeHolder(networkId) {
   console.log(`${networkId} - holder start...`);
 
-  const browser = puppeteer.launch();
+  const browser = puppeteer.launch({
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
   const createInstance = async (url) => {
     let real_instance = await browser;
     let page = await real_instance.newPage();
