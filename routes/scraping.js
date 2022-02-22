@@ -36,7 +36,7 @@ async function scrape(networkId) {
   await page.reload();
 
   await page.waitForSelector(".recharts-pie");
-  await new Promise((resolve) => setTimeout(resolve, 9500));
+  await new Promise((resolve) => setTimeout(resolve, 11000));
 
   const text = await page.evaluate(() =>
     Array.from(
@@ -47,26 +47,6 @@ async function scrape(networkId) {
 
   browser.close();
   console.log("the end");
-
-  console.log({
-    chainId: networkId,
-    globalMarketCap: text[0],
-    globalTotalTreasuryBalance: text[1],
-    globalTotalTreasuryVaultsBalance: text[2],
-    globalCirculatingSupply: text[3],
-    globalTotalSupply: text[4],
-    globalBackingPerTem: text[5],
-    globalRunway: text[6],
-    marketCap: text[7],
-    temPrice: text[8],
-    apy: text[9],
-    circulatingSupply: text[10],
-    totalSupply: text[11],
-    treasuryBalance: text[12],
-    stakingReturn: text[13],
-    stakedRate: text[14],
-    wSwordPrice: text[15],
-  });
 
   return {
     chainId: networkId,
@@ -111,7 +91,7 @@ async function scrapeHolder(networkId) {
       text = await (await prev.getProperty("innerHTML")).jsonValue();
     } else {
       // for Hamony network
-      await new Promise((resolve) => setTimeout(resolve, 9500));
+      await new Promise((resolve) => setTimeout(resolve, 11000));
 
       const [span] = await page.$x("//span[contains(., 'Holders')]");
       const prev = await page.evaluateHandle((el) => el?.nextSibling, span);
