@@ -36,7 +36,7 @@ async function scrape(networkId) {
   await page.reload();
 
   await page.waitForSelector(".recharts-pie");
-  await new Promise((resolve) => setTimeout(resolve, 11000));
+  await new Promise((resolve) => setTimeout(resolve, 9000));
 
   const text = await page.evaluate(() =>
     Array.from(
@@ -111,7 +111,7 @@ async function scrapeHolder(networkId) {
       text = await (await prev.getProperty("innerHTML")).jsonValue();
     } else {
       // for Hamony network
-      await new Promise((resolve) => setTimeout(resolve, 10000));
+      await new Promise((resolve) => setTimeout(resolve, 8000));
       await page.screenshot({ path: `x.png`, fullPage: true });
 
       const [span] = await page.$x("//span[contains(., 'Holders')]");
