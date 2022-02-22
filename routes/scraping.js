@@ -2,8 +2,24 @@ var express = require("express");
 const puppeteer = require("puppeteer");
 var router = express.Router();
 
+const holderConfig = {
+  56: [
+    "https://bscscan.com/token/0x8C9827Cd430d945aE5A5c3cfdc522f8D342334B9",
+    "https://bscscan.com/token/0x66972b14e525374DCE713ce14c8D080f3036dAbb",
+  ],
+  1285: [
+    "https://moonriver.moonscan.io/token/0x8C9827Cd430d945aE5A5c3cfdc522f8D342334B9",
+    "https://moonriver.moonscan.io/token/0xe1b9b34b03ec34b0802398b7669de6d0d43c9871",
+  ],
+  1666600000: [
+    "https://explorer.harmony.one/address/0x8646029f997cdb2cf51bde492b15026aee198c3e",
+    "https://explorer.harmony.one/address/0xc7de4e4227f00e91cab422faa5630d40aecdb6a4",
+  ],
+};
+
 async function scrape(networkId) {
   console.log(`${networkId} - starting...`);
+
   const browser = await puppeteer.launch({
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
@@ -29,12 +45,8 @@ async function scrape(networkId) {
     )
   );
 
-  // await page.screenshot({ path: `${networkId}.png`, fullPage: true });
-
   browser.close();
   console.log("the end");
-
-  console.log(text);
 
   return {
     chainId: networkId,
@@ -57,6 +69,52 @@ async function scrape(networkId) {
   };
 }
 
+async function scrapeHolder(networkId) {
+  console.log(`${networkId} - holder start...`);
+
+  const browser = puppeteer.launch();
+  const createInstance = async (url) => {
+    let real_instance = await browser;
+    let page = await real_instance.newPage();
+    await page.goto(url);
+
+    let text = "";
+
+    const last = await page.$("#sparkholderscontainer");
+    if (last) {
+      const prev = await page.evaluateHandle(
+        (el) => el.previousElementSibling,
+        last
+      );
+      text = await (await prev.getProperty("innerHTML")).jsonValue();
+    } else {
+      // for Hamony network
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+      await page.screenshot({ path: `x.png`, fullPage: true });
+
+      const [span] = await page.$x("//span[contains(., 'Holders')]");
+      const prev = await page.evaluateHandle((el) => el.nextSibling, span);
+
+      text = await (await prev?.getProperty("textContent"))?.jsonValue();
+    }
+
+    await page.close();
+
+    return text?.trim()?.split(" ")[0]?.replace(/,/g, "") || "0";
+  };
+
+  const data = await Promise.all(
+    holderConfig[networkId].map((url) => createInstance(url))
+  );
+
+  console.log("holder end");
+
+  return {
+    holderSword: data[0],
+    holderWsword: data[1],
+  };
+}
+
 router.get("/:networkId", async function (req, res, next) {
   const networkId = req.params.networkId;
 
@@ -66,12 +124,23 @@ router.get("/:networkId", async function (req, res, next) {
       .send("Something broke! we support networks: 56, 1285 and 1666600000.");
   }
 
-  const values = await scrape(Number(networkId));
+  const data = await Promise.all([
+    scrape(Number(networkId)),
+    scrapeHolder(Number(networkId)),
+  ]);
+  const values = data.reduce(
+    (prev, cur) => ({
+      ...prev,
+      ...cur,
+    }),
+    {}
+  );
+
   const size = Object.keys(values).length;
 
   console.log(values);
 
-  if (size < 16) {
+  if (size < 18) {
     res.status(500).send("Something broke! incomplete information.");
   }
 
