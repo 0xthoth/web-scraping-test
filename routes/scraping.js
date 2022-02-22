@@ -82,6 +82,7 @@ async function scrapeHolder(networkId) {
 
     let text = "";
 
+    await new Promise((resolve) => setTimeout(resolve, 3000));
     const last = await page.$("#sparkholderscontainer");
     if (last) {
       const prev = await page.evaluateHandle(
@@ -91,7 +92,7 @@ async function scrapeHolder(networkId) {
       text = await (await prev.getProperty("innerHTML")).jsonValue();
     } else {
       // for Hamony network
-      await new Promise((resolve) => setTimeout(resolve, 11000));
+      await new Promise((resolve) => setTimeout(resolve, 9000));
 
       const [span] = await page.$x("//span[contains(., 'Holders')]");
       const prev = await page.evaluateHandle((el) => el?.nextSibling, span);
@@ -109,11 +110,6 @@ async function scrapeHolder(networkId) {
   );
 
   console.log("holder end");
-
-  console.log({
-    holderSword: data[0],
-    holderWsword: data[1],
-  });
 
   return {
     holderSword: data[0],
@@ -134,6 +130,7 @@ router.get("/:networkId", async function (req, res, next) {
     scrape(Number(networkId)),
     scrapeHolder(Number(networkId)),
   ]);
+
   const values = data.reduce(
     (prev, cur) => ({
       ...prev,
