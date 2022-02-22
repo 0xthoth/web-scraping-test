@@ -94,7 +94,7 @@ async function scrapeHolder(networkId) {
         console.log(text);
       } else {
         // for Hamony network
-        await new Promise((resolve) => setTimeout(resolve, 9000));
+        await new Promise((resolve) => setTimeout(resolve, 9500));
 
         const [span] = await page.$x("//span[contains(., 'Holders')]");
         const prev = await page.evaluateHandle((el) => el?.nextSibling, span);
