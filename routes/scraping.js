@@ -5,7 +5,7 @@ var router = express.Router();
 async function scrape(networkId) {
   console.log(`${networkId} - starting...`);
   const browser = await puppeteer.launch({
-    args: ["--disable-setuid-sandbox", "--no-sandbox"],
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   const page = await browser.newPage();
 
