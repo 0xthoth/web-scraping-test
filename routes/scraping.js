@@ -115,7 +115,7 @@ async function scrapeHolder(networkId) {
       await page.screenshot({ path: `x.png`, fullPage: true });
 
       const [span] = await page.$x("//span[contains(., 'Holders')]");
-      const prev = await page.evaluateHandle((el) => el.nextSibling, span);
+      const prev = await page.evaluateHandle((el) => el?.nextSibling, span);
 
       text = await (await prev?.getProperty("textContent"))?.jsonValue();
     }
