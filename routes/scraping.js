@@ -36,7 +36,7 @@ async function scrape(networkId) {
   await page.reload();
 
   await page.waitForSelector(".recharts-pie");
-  await new Promise((resolve) => setTimeout(resolve, 11000));
+  await new Promise((resolve) => setTimeout(resolve, 9500));
 
   const text = await page.evaluate(() =>
     Array.from(
@@ -90,7 +90,7 @@ async function scrapeHolder(networkId) {
           (el) => el.previousElementSibling,
           last
         );
-        text = await (await prev.getProperty("innerHTML")).jsonValue();
+        text = await (await prev?.getProperty("innerHTML"))?.jsonValue();
         console.log(text);
       } else {
         // for Hamony network
@@ -103,6 +103,7 @@ async function scrapeHolder(networkId) {
       }
     } catch (e) {
       console.log(e);
+      await page.close();
     }
 
     await page.close();
