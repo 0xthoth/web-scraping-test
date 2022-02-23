@@ -36,7 +36,7 @@ async function scrape(networkId) {
   await page.reload();
 
   await page.waitForSelector(".recharts-pie");
-  await new Promise((resolve) => setTimeout(resolve, 9500));
+  await new Promise((resolve) => setTimeout(resolve, 10500));
 
   const text = await page.evaluate(() =>
     Array.from(
@@ -84,7 +84,7 @@ async function scrapeHolder(networkId) {
 
     try {
       if (networkId !== 1666600000) {
-        await new Promise((resolve) => setTimeout(resolve, 9000));
+        await new Promise((resolve) => setTimeout(resolve, 3000));
         const last = await page.$("#sparkholderscontainer");
         const prev = await page.evaluateHandle(
           (el) => el.previousElementSibling,
@@ -101,8 +101,13 @@ async function scrapeHolder(networkId) {
         text = await (await prev?.getProperty("textContent"))?.jsonValue();
       }
     } catch (e) {
-      console.log(e);
+      console.log("Holder", e);
       await page.close();
+
+      return {
+        holderSword: 0,
+        holderWsword: 0,
+      };
     }
 
     await page.close();
@@ -134,16 +139,20 @@ router.get("/:networkId", async function (req, res, next) {
 
   const data = await Promise.all([
     scrape(Number(networkId)),
-    // scrapeHolder(Number(networkId)),
+    scrapeHolder(Number(networkId)),
   ]);
 
-  const values = data.reduce(
+  let values = data.reduce(
     (prev, cur) => ({
       ...prev,
       ...cur,
     }),
     {}
   );
+
+  values = JSON.parse(JSON.stringify(values));
+
+  console.log(values);
 
   const size = Object.keys(values).length;
 
