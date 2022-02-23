@@ -84,6 +84,7 @@ async function scrapeHolder(networkId) {
 
     try {
       if (networkId !== 1666600000) {
+        await page.screenshot({ path: `${url}.png` });
         await new Promise((resolve) => setTimeout(resolve, 3000));
         const last = await page.$("#sparkholderscontainer");
         const prev = await page.evaluateHandle(
@@ -93,6 +94,7 @@ async function scrapeHolder(networkId) {
         text = await (await prev?.getProperty("innerHTML"))?.jsonValue();
       } else {
         // for Hamony network
+        await page.screenshot({ path: `${url}.png` });
         await new Promise((resolve) => setTimeout(resolve, 9500));
 
         const [span] = await page.$x("//span[contains(., 'Holders')]");
@@ -104,10 +106,7 @@ async function scrapeHolder(networkId) {
       console.log("Holder", e);
       await page.close();
 
-      return {
-        holderSword: 0,
-        holderWsword: 0,
-      };
+      return "0";
     }
 
     await page.close();
