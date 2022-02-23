@@ -75,7 +75,7 @@ async function scrapeHolder(networkId) {
   const browser = puppeteer.launch({
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
-  const createInstance = async (url) => {
+  const createInstance = async (url, i) => {
     let real_instance = await browser;
     let page = await real_instance.newPage();
     await page.goto(url);
@@ -84,8 +84,9 @@ async function scrapeHolder(networkId) {
 
     try {
       if (networkId !== 1666600000) {
-        await page.screenshot({ path: `${url}.png` });
         await new Promise((resolve) => setTimeout(resolve, 3000));
+        await page.screenshot({ path: `${i}.png` });
+
         const last = await page.$("#sparkholderscontainer");
         const prev = await page.evaluateHandle(
           (el) => el.previousElementSibling,
@@ -94,8 +95,9 @@ async function scrapeHolder(networkId) {
         text = await (await prev?.getProperty("innerHTML"))?.jsonValue();
       } else {
         // for Hamony network
-        await page.screenshot({ path: `${url}.png` });
-        await new Promise((resolve) => setTimeout(resolve, 9500));
+
+        await new Promise((resolve) => setTimeout(resolve, 9000));
+        await page.screenshot({ path: `${i}.png` });
 
         const [span] = await page.$x("//span[contains(., 'Holders')]");
         const prev = await page.evaluateHandle((el) => el?.nextSibling, span);
@@ -115,7 +117,7 @@ async function scrapeHolder(networkId) {
   };
 
   const data = await Promise.all(
-    holderConfig[networkId].map((url) => createInstance(url))
+    holderConfig[networkId].map((url, i) => createInstance(url, i))
   );
 
   console.log("holder end");
